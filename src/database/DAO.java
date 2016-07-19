@@ -1,10 +1,11 @@
 package database;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 import data.User;
 
@@ -32,7 +33,7 @@ public class DAO {
 				String dniP = rs.getString("DNI");
 				String name = rs.getString("Nombre_Completo");
 				String p = rs.getString("Pass");
-				Date f = rs.getDate("Fecha");
+				String f = rs.getDate("Fecha").toString();
 				int tipo = rs.getInt("Tipo");
 				result = new User(dniP,p,name,f,tipo);
 			}			
@@ -47,6 +48,39 @@ public class DAO {
 			} catch (Exception e) {}
 		}
 		return result;		
+	}
+	
+	public List<User> getUserList() {
+		Connection con        = null;
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		List<User> resul = new LinkedList<User>();
+		try{
+			con = DBConnection.getConnection();
+			String sql = "SELECT * FROM usuario";
+			pst = con.prepareStatement(sql);
+			rs = pst.executeQuery();
+			while (rs.next() && rs.getInt("Tipo")==0) {
+				String dni = rs.getString("DNI");
+				String name = rs.getString("Nombre_Completo");
+				String p = rs.getString("Pass");
+				String f = rs.getDate("Fecha").toString();
+				int tipo = rs.getInt("Tipo");
+				resul.add(new User(dni,f,name,p,tipo));
+			}
+			return resul;
+		}
+		catch (SQLException e){
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (con != null) con.close();
+			} catch (Exception e) {}
+		}
+		return null;
 	}
 
 }

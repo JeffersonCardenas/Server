@@ -2,19 +2,18 @@ package data;
 
 import java.beans.XMLEncoder;
 import java.io.ByteArrayOutputStream;
-import java.sql.Date;
 
 public class User {
 	
 	private String DNI;
-	private Date fecha; //Date???
+	private String fecha;
 	private String nombre;
 	private String pass;
 	private int tipo;
 	
 	public User(){}
 	
-	public User(String dniP, String p, String name, Date f, int t) {
+	public User(String dniP, String p, String name, String f, int t) {
 		this.DNI=dniP;
 		this.pass=p;
 		this.nombre=name;
@@ -30,11 +29,11 @@ public class User {
 		DNI = dNI;
 	}
 	
-	public Date getFecha() {
+	public String getFecha() {
 		return fecha;
 	}
 	
-	public void setFecha(Date fecha) {
+	public void setFecha(String fecha) {
 		this.fecha = fecha;
 	}
 	

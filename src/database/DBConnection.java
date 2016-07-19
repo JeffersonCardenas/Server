@@ -18,12 +18,12 @@ public class DBConnection {
 			props.load(fis);
 
 			// load the Driver Class
-			Class.forName(props.getProperty("ORACLE_DB_DRIVER_CLASS"));
+			Class.forName(props.getProperty("DB_DRIVER_CLASS"));
 
 			// create the connection now
-			con = DriverManager.getConnection(props.getProperty("ORACLE_DB_URL"),
-					props.getProperty("ORACLE_DB_USERNAME"),
-					props.getProperty("ORACLE_DB_PASSWORD"));
+			con = DriverManager.getConnection(props.getProperty("DB_URL"),
+					props.getProperty("DB_USERNAME"),
+					props.getProperty("DB_PASSWORD"));
 		} catch (IOException | ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
