@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-import data.User;
+import data.*;
 
 public class DAO {
 	
@@ -67,6 +67,36 @@ public class DAO {
 				String f = rs.getDate("Fecha").toString();
 				int tipo = rs.getInt("Tipo");
 				resul.add(new User(dni,f,name,p,tipo));
+			}
+			return resul;
+		}
+		catch (SQLException e){
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (con != null) con.close();
+			} catch (Exception e) {}
+		}
+		return null;
+	}
+	
+	public List<Certificados> getCertificados() {
+		Connection con        = null;
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		List<Certificados> resul = new LinkedList<Certificados>();
+		try{
+			con = DBConnection.getConnection();
+			String sql = "SELECT * FROM certificacion";
+			pst = con.prepareStatement(sql);
+			rs = pst.executeQuery();
+			while (rs.next()) {
+				int t = rs.getInt("Nivel");
+				int l = rs.getInt("Limite");
+				resul.add(new Certificados(t,l));
 			}
 			return resul;
 		}

@@ -29,7 +29,10 @@ public class UserResource {
 			logger.info("El usuario no existe",this);
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
-		else return this.userToXml(result);
+		else {
+			logger.info("El usuario "+result.getNombre()+" existe", this);
+			return this.userToXml(result);
+		}
 	}
 	
 	@GET

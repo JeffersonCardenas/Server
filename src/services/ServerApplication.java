@@ -15,7 +15,7 @@ public class ServerApplication extends Application{
 	
 	public ServerApplication(){
 		this.singletons.add(new UserResource());
-		//this.singletons.add(new DAO());
+		this.singletons.add(new CertificadoResource());
 		logger.info("Entramos en ServerApplication");
 	}
 	
@@ -26,7 +26,7 @@ public class ServerApplication extends Application{
 	public Set<Class<?>> getClasses() {
 		HashSet<Class<?>> set = new HashSet<Class<?>>();
 		set.add(UserResource.class);
-		//set.add(DAO.class);
+		set.add(CertificadoResource.class);
 		return set;
 	}
 
