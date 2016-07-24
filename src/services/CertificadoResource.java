@@ -43,8 +43,7 @@ public class CertificadoResource {
 	private String objectToXml(Certificados c){
 		return "<certificado>"+
 				"<nivel>"+c.getNivel()+"</nivel>"+
-      			"<limite>" + c.getLimite() + "</limite>"+
-      		"</certificado>";
+      		   "</certificado>";
 		
 	}
 

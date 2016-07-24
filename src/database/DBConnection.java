@@ -25,7 +25,6 @@ public class DBConnection {
 					props.getProperty("DB_USERNAME"),
 					props.getProperty("DB_PASSWORD"));
 		} catch (IOException | ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return con;

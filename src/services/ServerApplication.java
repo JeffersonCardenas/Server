@@ -16,6 +16,7 @@ public class ServerApplication extends Application{
 	public ServerApplication(){
 		this.singletons.add(new UserResource());
 		this.singletons.add(new CertificadoResource());
+		this.singletons.add(new ExamenResource());
 		logger.info("Entramos en ServerApplication");
 	}
 	
@@ -27,6 +28,7 @@ public class ServerApplication extends Application{
 		HashSet<Class<?>> set = new HashSet<Class<?>>();
 		set.add(UserResource.class);
 		set.add(CertificadoResource.class);
+		set.add(ExamenResource.class);
 		return set;
 	}
 

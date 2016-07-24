@@ -1,5 +1,10 @@
 package services;
 
+import java.net.URI;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -50,6 +55,28 @@ public class UserResource {
 			return result;
 		}
 		else throw new WebApplicationException(Response.Status.NOT_FOUND);
+		
+	}
+	
+	@POST
+	@Path("{nombre}-{dni}-{pass}")
+	public Response insertUser(@PathParam("nombre") String nombre, 
+			@PathParam("dni") String dni,@PathParam("pass") String pass){
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar cal = Calendar.getInstance();
+		String fecha = dateFormat.format(cal.getTime());
+		java.util.Date date = null;
+		int success = 0;
+		try{
+			date = dateFormat.parse(fecha);			
+		}
+		catch(ParseException p){
+			p.printStackTrace();
+		}		
+		java.sql.Date fechaInsert = new java.sql.Date(date.getTime());
+		success = dao.insertaUsuario(nombre, dni, pass, fechaInsert);
+		if (success>0) return Response.created(URI.create("/customers/" + dni)).build();
+		else throw new WebApplicationException(Response.Status.NOT_MODIFIED);
 		
 	}
 	
