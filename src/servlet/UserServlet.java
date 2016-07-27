@@ -29,9 +29,7 @@ public class UserServlet extends HttpServlet{
 			System.err.println("*** No log4j-properties-location init param");
 		} else {
 			String log4jProp = pathProperties + "config/log4j2.properties";
-			//System.out.println(log4jProp);
 			File file = new File(log4jProp);
-			//System.out.println(file.getAbsolutePath());
 			if (file.exists()) {
 				System.out.println("Initializing log4j with: " + log4jProp);
 				logger.info("Logger Cargado");

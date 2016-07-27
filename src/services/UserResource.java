@@ -1,6 +1,5 @@
 package services;
 
-import java.net.URI;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,12 +7,14 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.*;
 import data.User;
@@ -26,9 +27,9 @@ public class UserResource {
 	private static final Logger logger = LogManager.getLogger(UserResource.class);
 	
 	@POST
-	@Path("{dni}-{pass}")
+	@Path("get")
 	@Produces("application/xml")
-	public String getUserApp(@PathParam("dni") String dni,@PathParam("pass") String pass){
+	public String getUserApp(@FormParam("dni") String dni,@FormParam("pass") String pass){
 		final User result = dao.getUser(dni, pass);
 		if (result==null){
 			logger.info("El usuario no existe",this);
@@ -59,9 +60,10 @@ public class UserResource {
 	}
 	
 	@POST
-	@Path("{nombre}-{dni}-{pass}")
-	public Response insertUser(@PathParam("nombre") String nombre, 
-			@PathParam("dni") String dni,@PathParam("pass") String pass){
+	@Path("add")
+	@Produces(MediaType.TEXT_HTML)
+	public Response insertUser(@FormParam("nombre") String nombre, 
+			@FormParam("dni") String dni,@FormParam("pass") String pass){
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar cal = Calendar.getInstance();
 		String fecha = dateFormat.format(cal.getTime());
@@ -75,7 +77,8 @@ public class UserResource {
 		}		
 		java.sql.Date fechaInsert = new java.sql.Date(date.getTime());
 		success = dao.insertaUsuario(nombre, dni, pass, fechaInsert);
-		if (success>0) return Response.created(URI.create("/customers/" + dni)).build();
+		String msg = "Insertado: "+nombre;
+		if (success>0) return Response.ok(msg).entity(msg).build();
 		else throw new WebApplicationException(Response.Status.NOT_MODIFIED);
 		
 	}

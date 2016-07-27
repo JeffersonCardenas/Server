@@ -5,6 +5,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+
 import javax.ws.rs.GET;
 import data.ExamenPractico;
 import data.ExamenTeorico;
@@ -48,7 +52,9 @@ public class ExamenResource {
 
 
 	private String examenTeoricoToXml(ExamenTeorico t) {
-		return "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"+
+		/*byte[] bytes = t.getDescripcion().getBytes( Charset.forName("UTF-8" ));
+		String desc = new String( bytes, Charset.forName("UTF-8") );*/
+		return "<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>"+
 				"<examen_teorico>"+
 				"<id_examen>"+t.getIdTeorico()+"</id_examen>"+
       			"<nombre>" + t.getNombre() + "</nombre>"+
