@@ -20,8 +20,14 @@ import database.DAO;
 @Path("/certificados")
 public class CertificadoResource {
 	
-	private DAO dao=new DAO();
+	private DAO dao;
 	private static final Logger logger = LogManager.getLogger(CertificadoResource.class);
+	
+	public CertificadoResource(){}
+	
+	public CertificadoResource(DAO d){
+		this.dao=d;
+	}
 	
 	@GET
 	@Produces("application/xml")

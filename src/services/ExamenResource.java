@@ -17,7 +17,13 @@ import database.DAO;
 @Path("/examen")
 public class ExamenResource {
 	
-	private DAO dao = new DAO();
+	private DAO dao;
+	
+	public ExamenResource(){}
+	
+	public ExamenResource(DAO d){
+		this.dao=d;
+	}
 	
 	@GET
 	@Path("/teorico/{nivel}")

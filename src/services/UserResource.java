@@ -23,8 +23,14 @@ import database.DAO;
 @Path("/user")
 public class UserResource {
 	
-	private DAO dao=new DAO();
+	private DAO dao;
 	private static final Logger logger = LogManager.getLogger(UserResource.class);
+	
+	public UserResource(){	}
+	
+	public UserResource(DAO d){
+		this.dao=d;
+	}
 	
 	@POST
 	@Path("get")
