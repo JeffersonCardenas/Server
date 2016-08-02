@@ -245,6 +245,46 @@ public class DAO {
 			}
 			return result;
 		}
+		
+		/**
+		 * Devuelve una lista de todos los modulos teoricos pertenecientes a un nivel
+		 * @param nivel de certificacion
+		 * @return Lista de Modulos Teoricos
+		 */
+		public List<ModuloTeorico> getListModTeorico(int nivel) {
+			Connection con        = null;
+			PreparedStatement pst = null;
+			ResultSet rs          = null;
+			List<ModuloTeorico> resul = new LinkedList<ModuloTeorico>();
+			try{
+				con = DBConnection.getConnection();
+				String sql = "select Id_Modulo,PDF from modulo_teorico where Nivel=?";
+				pst = con.prepareStatement(sql);
+				pst.setInt(1, nivel);
+				rs = pst.executeQuery();
+				while (rs.next()) {
+					int id = rs.getInt("Id_Modulo");
+					Blob b = rs.getBlob("PDF");
+					if (!rs.wasNull()){
+						byte[] pdf = b.getBytes(1, (int)b.length());
+						resul.add(new ModuloTeorico(id,nivel,pdf));
+					}
+					else resul.add(new ModuloTeorico(id,nivel));
+				}
+				return resul;
+			}
+			catch (SQLException e){
+				e.printStackTrace();
+			}
+			finally {
+				try {
+					if (rs != null) rs.close();
+					if (pst != null) pst.close();
+					if (con != null) con.close();
+				} catch (Exception e) {}
+			}
+			return null;
+		}
 
 
 }

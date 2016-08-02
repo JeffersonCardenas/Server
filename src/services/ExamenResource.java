@@ -58,8 +58,6 @@ public class ExamenResource {
 
 
 	private String examenTeoricoToXml(ExamenTeorico t) {
-		/*byte[] bytes = t.getDescripcion().getBytes( Charset.forName("UTF-8" ));
-		String desc = new String( bytes, Charset.forName("UTF-8") );*/
 		return "<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>"+
 				"<examen_teorico>"+
 				"<id_examen>"+t.getIdTeorico()+"</id_examen>"+
