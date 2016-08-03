@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -87,6 +88,23 @@ public class UserResource {
 		if (success>0) return Response.ok(msg).entity(msg).build();
 		else throw new WebApplicationException(Response.Status.NOT_MODIFIED);
 		
+	}
+	
+	@DELETE
+	@Path("{dni}")
+	public Response deleteUser(@PathParam("dni") String dni){
+		int resul = dao.deleteUsuario(dni);
+		String msg = "Usuario "+dni+" borrado";
+		if(resul>0) return Response.status(204).entity(msg).build();
+		else return Response.status(Response.Status.NOT_FOUND)
+				.entity("No se ha podido eliminar el usuario "+dni).build();
+	}
+	
+	@GET
+	@Path("{dni}")
+	public Response checkUser(@PathParam("dni") String dni){
+		if (dao.existeUsuario(dni)) return Response.status(Response.Status.OK).build();
+		else return Response.status(Response.Status.NOT_FOUND).build();
 	}
 	
 	protected String userToXml(User u){

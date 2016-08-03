@@ -80,6 +80,55 @@ public class DAO {
 		return resul;
 	}
 	
+	public int deleteUsuario(String dni) {
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		int resul = 0;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "delete from usuario where dni=?";
+			pst = this.connection.prepareStatement(query);
+			pst.setString(1, dni);
+			resul = pst.executeUpdate();			
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();				
+			} catch (Exception e) {}
+		}
+		return resul;
+	}
+	
+	public boolean existeUsuario(String dni) {
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		boolean resul = false;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "select nombre_completo from usuario where dni=?";
+			pst = this.connection.prepareStatement(query);
+			pst.setString(1, dni);
+			rs = pst.executeQuery();
+			resul = rs.next();
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();				
+			} catch (Exception e) {}
+		}
+		return resul;
+	}
+	
 	public List<User> getUserList() {
 		Connection con        = null;
 		PreparedStatement pst = null;
