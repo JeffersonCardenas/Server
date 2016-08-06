@@ -129,6 +129,32 @@ public class DAO {
 		return resul;
 	}
 	
+	public int updateUsuario(String dni, String name, String pass) {
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		int resul = 0;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "update usuario set nombre_completo=?,pass=? where dni=?";
+			pst = this.connection.prepareStatement(query);
+			pst.setString(1, name);
+			pst.setString(2, pass);
+			pst.setString(3, dni);
+			resul = pst.executeUpdate();			
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();				
+			} catch (Exception e) {}
+		}
+		return resul;
+	}
+	
 	public List<User> getUserList() {
 		Connection con        = null;
 		PreparedStatement pst = null;
@@ -145,7 +171,7 @@ public class DAO {
 				String p = rs.getString("Pass");
 				String f = rs.getDate("Fecha").toString();
 				int tipo = rs.getInt("Tipo");
-				resul.add(new User(dni,f,name,p,tipo));
+				resul.add(new User(dni,p,name,f,tipo));
 			}
 			return resul;
 		}
