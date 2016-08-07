@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.sql.rowset.serial.SerialBlob;
+
 import data.*;
 
 public class DAO {
@@ -359,6 +361,43 @@ public class DAO {
 				} catch (Exception e) {}
 			}
 			return null;
+		}
+		
+		/**
+		 * Inserta un nuevo modulo teorico en la BBDD
+		 * @param m Modulo Teorico
+		 * @return
+		 */
+		public int insertModuloTeorico(ModuloTeorico m){
+			PreparedStatement pst = null;
+			ResultSet rs          = null;
+			String query = null;
+			int resul = 0;
+			Blob blob = null;
+			try{
+				this.connection = DBConnection.getConnection();
+				query = "insert into modulo_teorico (Id_Modulo,Nivel,PDF) values (?,?,?)";
+				pst = this.connection.prepareStatement(query);
+				pst.setInt(1, m.getId_modulo());
+				pst.setInt(2, m.getNivel());
+				if (m.getPdf()!=null){
+					blob = new SerialBlob(m.getPdf());
+					pst.setBlob(3, blob);
+				}
+				else pst.setBlob(3, blob);
+				resul = pst.executeUpdate();		
+			}
+			catch(SQLException e){
+				e.printStackTrace();
+			} finally {
+				try{
+					if (rs != null) rs.close();
+					if (pst != null) pst.close();
+					if (this.connection != null) this.connection.close();				
+				} catch (Exception e) {}
+			}
+			return resul;
+			
 		}
 
 

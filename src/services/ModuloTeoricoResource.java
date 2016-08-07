@@ -1,14 +1,19 @@
 package services;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -54,6 +59,47 @@ public class ModuloTeoricoResource {
             }
         }        
         return fileBytes;
+	}
+	
+	@POST
+	@Path("upload/{nivel}/{modulo}")
+	public Response uploadPDF(@PathParam("nivel") int nivel,@PathParam("modulo") int modulo,
+			@FormParam("file") String file){
+		ModuloTeorico mod = dao.getModuloTeorico(nivel, modulo);
+		if (mod == null){
+			System.out.println("El Modulo no está en la BBDD");
+			String filePath = ModuloTeoricoResource.class.getResource("/teoria/c"+nivel+"/"+modulo+".pdf").toString();
+			
+			String[] byteValues = file.substring(1, file.length() - 1).split(",");
+			byte[] bytes = new byte[byteValues.length];
+
+			for (int i=0, len=bytes.length; i<len; i++) {
+			   bytes[i] = Byte.parseByte(byteValues[i].trim());
+			}
+
+			String str = new String(bytes);
+			
+	        byte[] imageBytes = str.getBytes(Charset.forName("UTF-8"));
+	        try {
+	        	System.out.println("Insertando archivo");
+	            FileOutputStream fos = new FileOutputStream(filePath);
+	            BufferedOutputStream outputStream = new BufferedOutputStream(fos);
+	            outputStream.write(imageBytes);
+	            outputStream.close();
+	            if (imageBytes!=null) mod = new ModuloTeorico(modulo,nivel,imageBytes);
+	            else mod = new ModuloTeorico(modulo,nivel);
+	            dao.insertModuloTeorico(mod);
+	             
+	            System.out.println("Received file: " + filePath);
+	            
+	        } catch (IOException ex) {
+	            System.err.println(ex);
+	        }
+	        return Response.status(Response.Status.OK).build();
+		}
+		else return Response.status(Response.Status.BAD_REQUEST).build();
+		
+		
 	}
 	
 	@GET
