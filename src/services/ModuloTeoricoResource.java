@@ -1,16 +1,14 @@
 package services;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -19,6 +17,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+
+import org.apache.commons.io.FileUtils;
+import org.jboss.resteasy.util.Base64;
 
 import database.DAO;
 import data.ModuloTeorico;
@@ -63,42 +64,41 @@ public class ModuloTeoricoResource {
 	
 	@POST
 	@Path("upload/{nivel}/{modulo}")
+	@Consumes("application/x-www-form-urlencoded")
 	public Response uploadPDF(@PathParam("nivel") int nivel,@PathParam("modulo") int modulo,
 			@FormParam("file") String file){
 		ModuloTeorico mod = dao.getModuloTeorico(nivel, modulo);
+		byte[] imageBytes = null;
+		int exito = 0;
 		if (mod == null){
-			System.out.println("El Modulo no está en la BBDD");
-			String filePath = ModuloTeoricoResource.class.getResource("/teoria/c"+nivel+"/"+modulo+".pdf").toString();
-			
-			String[] byteValues = file.substring(1, file.length() - 1).split(",");
-			byte[] bytes = new byte[byteValues.length];
-
-			for (int i=0, len=bytes.length; i<len; i++) {
-			   bytes[i] = Byte.parseByte(byteValues[i].trim());
-			}
-
-			String str = new String(bytes);
-			
-	        byte[] imageBytes = str.getBytes(Charset.forName("UTF-8"));
 	        try {
-	        	System.out.println("Insertando archivo");
-	            FileOutputStream fos = new FileOutputStream(filePath);
-	            BufferedOutputStream outputStream = new BufferedOutputStream(fos);
-	            outputStream.write(imageBytes);
-	            outputStream.close();
-	            if (imageBytes!=null) mod = new ModuloTeorico(modulo,nivel,imageBytes);
-	            else mod = new ModuloTeorico(modulo,nivel);
-	            dao.insertModuloTeorico(mod);
-	             
-	            System.out.println("Received file: " + filePath);
+	        	System.out.println("El Modulo no está en la BBDD");
+				String filePath = ModuloTeoricoResource.class.getResource("/teoria/c"+nivel+"/").toString();
+				System.out.println(filePath);
+				
+				imageBytes = Base64.decode(file.getBytes());
+	        	
+	        	String fileName = filePath + modulo+".pdf";
+	        	System.out.println("Insertando archivo: "+fileName);
+
+	        	File archivo = new File(fileName);
+	        	if (!archivo.exists() && archivo.createNewFile()){
+	        		FileUtils.writeByteArrayToFile(archivo, imageBytes);
+		            if (imageBytes!=null) mod = new ModuloTeorico(modulo,nivel,imageBytes);
+		            else mod = new ModuloTeorico(modulo,nivel);
+		            exito = dao.insertModuloTeorico(mod);
+		            System.out.println("File Created: " + filePath);
+	        	}
 	            
 	        } catch (IOException ex) {
 	            System.err.println(ex);
+	        } catch (Exception e){
+	        	System.err.println(e);
 	        }
-	        return Response.status(Response.Status.OK).build();
+	        if (exito>0) return Response.status(Response.Status.OK).build();
+	        else return Response.status(Response.Status.NOT_FOUND).build();
 		}
 		else return Response.status(Response.Status.BAD_REQUEST).build();
-		
 		
 	}
 	
