@@ -18,8 +18,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.io.FileUtils;
-import org.jboss.resteasy.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 
 import database.DAO;
 import data.ModuloTeorico;
@@ -41,24 +40,27 @@ public class ModuloTeoricoResource {
         byte[] fileBytes = null;
         ModuloTeorico mod = dao.getModuloTeorico(nivel, modulo);
         if (mod!=null){
-        	try {
-            	String filePath = ModuloTeoricoResource.class.getResource("/teoria/c"+nivel+"/"+modulo+".pdf").toString();
-                System.out.println("Sending file: " + filePath);
-            	
-                File file = new File(ModuloTeoricoResource.class.getResource("/teoria/c"+nivel+"/"+modulo+".pdf").toURI());
-                FileInputStream fis = new FileInputStream(file);
-                BufferedInputStream inputStream = new BufferedInputStream(fis);
-                fileBytes = new byte[(int) file.length()];
-                inputStream.read(fileBytes);
-                inputStream.close();
-                
-            } catch (IOException ex) {
-                System.err.println(ex);
-            }
-            catch(URISyntaxException ur){
-            	System.err.println(ur);
-            }
-        }        
+        	if (mod.getPdf()==null){
+        		try {
+                	String filePath = ModuloTeoricoResource.class.getResource("/teoria/c"+nivel+"/"+modulo+".pdf").toString();
+                    System.out.println("Sending file: " + filePath);
+                	
+                    File file = new File(ModuloTeoricoResource.class.getResource("/teoria/c"+nivel+"/"+modulo+".pdf").toURI());
+                    FileInputStream fis = new FileInputStream(file);
+                    BufferedInputStream inputStream = new BufferedInputStream(fis);
+                    fileBytes = new byte[(int) file.length()];
+                    inputStream.read(fileBytes);
+                    inputStream.close();
+                    
+                } catch (IOException ex) {
+                    System.err.println(ex);
+                }
+                catch(URISyntaxException ur){
+                	System.err.println(ur);
+                }
+        	}
+        	else fileBytes = mod.getPdf();
+        }
         return fileBytes;
 	}
 	
@@ -69,33 +71,16 @@ public class ModuloTeoricoResource {
 			@FormParam("file") String file){
 		ModuloTeorico mod = dao.getModuloTeorico(nivel, modulo);
 		byte[] imageBytes = null;
-		int exito = 0;
+		
 		if (mod == null){
-	        try {
-	        	System.out.println("El Modulo no está en la BBDD");
-				String filePath = ModuloTeoricoResource.class.getResource("/teoria/c"+nivel+"/").toString();
-				System.out.println(filePath);
+			imageBytes = Base64.decodeBase64(file);
 				
-				imageBytes = Base64.decode(file.getBytes());
-	        	
-	        	String fileName = filePath + modulo+".pdf";
-	        	System.out.println("Insertando archivo: "+fileName);
-
-	        	File archivo = new File(fileName);
-	        	if (!archivo.exists() && archivo.createNewFile()){
-	        		FileUtils.writeByteArrayToFile(archivo, imageBytes);
-		            if (imageBytes!=null) mod = new ModuloTeorico(modulo,nivel,imageBytes);
-		            else mod = new ModuloTeorico(modulo,nivel);
-		            exito = dao.insertModuloTeorico(mod);
-		            System.out.println("File Created: " + filePath);
-	        	}
-	            
-	        } catch (IOException ex) {
-	            System.err.println(ex);
-	        } catch (Exception e){
-	        	System.err.println(e);
-	        }
-	        if (exito>0) return Response.status(Response.Status.OK).build();
+			System.out.println("String descodificado");
+	        		
+		    if (imageBytes!=null) mod = new ModuloTeorico(modulo,nivel,imageBytes);
+		    else mod = new ModuloTeorico(modulo,nivel);
+	        
+	        if (dao.insertModuloTeorico(mod)>0) return Response.status(Response.Status.OK).build();
 	        else return Response.status(Response.Status.NOT_FOUND).build();
 		}
 		else return Response.status(Response.Status.BAD_REQUEST).build();
@@ -121,16 +106,15 @@ public class ModuloTeoricoResource {
 	public String getModulos(@PathParam("nivel") int nivel){
 		List<ModuloTeorico> listaMod = dao.getListModTeorico(nivel);
 		if (listaMod!=null){
-			String result = "<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>"+
-								"<modulos_teoricos>";
+			String result = "<modulos_teoricos>";
 			Iterator<ModuloTeorico> it = listaMod.iterator();
 			while (it.hasNext()){
 				ModuloTeorico m = it.next();
 				result+="<modulo_teorico>"+
 						"<id_modulo>"+m.getId_modulo()+"</id_modulo>"+
 						"<nivel>" + m.getNivel() + "</nivel>";
-				if (m.getPdf()!=null) result+="<pdf>"+m.getPdf().toString()+"</pdf>";
-				else result+="<pdf>0</pdf>";
+				if (m.getPdf()!=null) result+="<pdf>"+new String(Base64.encodeBase64(m.getPdf()))+"</pdf>";
+				else result+="<pdf></pdf>";
 				result+="</modulo_teorico>";
 			}
 			return result+="</modulos_teoricos>";
@@ -139,12 +123,11 @@ public class ModuloTeoricoResource {
 	}
 	
 	private String moduloToXml(ModuloTeorico m){
-		String result = "<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>"+
-							"<modulo_teorico>"+
+		String result = "<modulo_teorico>"+
 								"<id_modulo>"+m.getId_modulo()+"</id_modulo>"+
 								"<nivel>" + m.getNivel() + "</nivel>";
-		if (m.getPdf()!=null) result+="<pdf>"+m.getPdf().toString()+"</pdf>";
-			else result+="<pdf>0</pdf>";
+		if (m.getPdf()!=null) result+="<pdf>"+new String(Base64.encodeBase64(m.getPdf()))+"</pdf>";
+					else result+="<pdf></pdf>";
       	return result+=	"</modulo_teorico>";
 	}
 

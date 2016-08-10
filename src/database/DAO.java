@@ -9,8 +9,6 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.sql.rowset.serial.SerialBlob;
-
 import data.*;
 
 public class DAO {
@@ -381,7 +379,8 @@ public class DAO {
 				pst.setInt(1, m.getId_modulo());
 				pst.setInt(2, m.getNivel());
 				if (m.getPdf()!=null){
-					blob = new SerialBlob(m.getPdf());
+					blob = this.connection.createBlob();
+					blob.setBytes(1, m.getPdf());
 					pst.setBlob(3, blob);
 				}
 				else pst.setBlob(3, blob);
