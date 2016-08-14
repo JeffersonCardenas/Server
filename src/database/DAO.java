@@ -217,6 +217,41 @@ public class DAO {
 		return null;
 	}
 	
+	/**
+	 * Devuelve los certificados obtenidos por un usuario
+	 * @param dni del alumno
+	 * @return Lista de certificados obtenidos por el alumno
+	 */
+	public List<Certificados> getCertificadosFromUser(String dni) {
+		Connection con        = null;
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		List<Certificados> resul = new LinkedList<Certificados>();
+		try{
+			con = DBConnection.getConnection();
+			String sql = "select nivel from tiene where dni=?";
+			pst = con.prepareStatement(sql);
+			pst.setString(1, dni);
+			rs = pst.executeQuery();
+			while (rs.next()) {
+				int t = rs.getInt("Nivel");
+				resul.add(new Certificados(t));
+			}
+			return resul;
+		}
+		catch (SQLException e){
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (con != null) con.close();
+			} catch (Exception e) {}
+		}
+		return null;
+	}
+	
 	
 	public ExamenPractico getExamenPractico(int level) {
 		PreparedStatement pst = null;
@@ -255,7 +290,7 @@ public class DAO {
 			String query = null;
 			try{
 				this.connection = DBConnection.getConnection();
-				query = "select Id_Examen,Nombre,Descripcion,Tiempo_Examen,numPreguntas from EXAMEN_TEORICO where Nivel=?";
+				query = "select Id_Examen,Nombre,Descripcion,Tiempo_Examen,num_preguntas from EXAMEN_TEORICO where Nivel=?";
 				pst = this.connection.prepareStatement(query);
 				pst.setInt(1, level);
 				rs = pst.executeQuery();
@@ -264,7 +299,7 @@ public class DAO {
 					String name = rs.getString("Nombre");
 					String d = rs.getString("Descripcion");
 					int tiempo = rs.getInt("Tiempo_Examen");
-					int num = rs.getInt("numPreguntas");
+					int num = rs.getInt("num_preguntas");
 					result = new ExamenTeorico(id,name,d,tiempo,num,level);
 				}			
 			}
@@ -397,6 +432,80 @@ public class DAO {
 			}
 			return resul;
 			
+		}
+		
+		/**
+		 * Accede a BBDD y devuelve una lista con las preguntas pertenecientes a un examen
+		 * @param idExamen
+		 * @return Lista de Pregunta o null si no hay preguntas para esa id
+		 */
+		public List<Pregunta> getListaPreguntasFromExamen(int idExamen) {
+			Connection con        = null;
+			PreparedStatement pst = null;
+			ResultSet rs          = null;
+			List<Pregunta> resul = new LinkedList<Pregunta>();
+			try{
+				con = DBConnection.getConnection();
+				String sql = "select Id_Pregunta,Enunciado from pregunta where Id_Examen=?";
+				pst = con.prepareStatement(sql);
+				pst.setInt(1, idExamen);
+				rs = pst.executeQuery();
+				while (rs.next()) {
+					int id = rs.getInt("Id_Pregunta");
+					String e = rs.getString("Enunciado");
+					resul.add(new Pregunta(id,e,idExamen));
+				}
+				return resul;
+			}
+			catch (SQLException e){
+				e.printStackTrace();
+			}
+			finally {
+				try {
+					if (rs != null) rs.close();
+					if (pst != null) pst.close();
+					if (con != null) con.close();
+				} catch (Exception e) {}
+			}
+			return null;
+		}
+		
+		/**
+		 * Accede a BBDD y devuelve una lista de Respuestas perteneciente a una pregunta
+		 * @param idPregunta
+		 * @return Lista de Respuestas o null si hay un error
+		 */
+		public List<Respuesta> getListaRespuestasFromPregunta(int idPregunta) {
+			Connection con        = null;
+			PreparedStatement pst = null;
+			ResultSet rs          = null;
+			List<Respuesta> resul = new LinkedList<Respuesta>();
+			try{
+				con = DBConnection.getConnection();
+				String sql = "select Id_Respuesta,Es_Correcta,Enunciado from respuesta where Id_Pregunta=?";
+				pst = con.prepareStatement(sql);
+				pst.setInt(1, idPregunta);
+				rs = pst.executeQuery();
+				while (rs.next()) {
+					int id = rs.getInt("Id_Respuesta");
+					int c = rs.getInt("Es_Correcta");
+					String e = rs.getString("Enunciado");
+					resul.add(new Respuesta(id,c,e,idPregunta));
+					
+				}
+				return resul;
+			}
+			catch (SQLException e){
+				e.printStackTrace();
+			}
+			finally {
+				try {
+					if (rs != null) rs.close();
+					if (pst != null) pst.close();
+					if (con != null) con.close();
+				} catch (Exception e) {}
+			}
+			return null;
 		}
 
 

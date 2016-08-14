@@ -6,9 +6,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-
 import javax.ws.rs.GET;
 import data.ExamenPractico;
 import data.ExamenTeorico;
@@ -64,7 +61,7 @@ public class ExamenResource {
       			"<nombre>" + t.getNombre() + "</nombre>"+
       			"<descripcion>" + t.getDescripcion() + "</descripcion>"+
       			"<tiempo_examen>" + t.getTiempo() + "</tiempo_examen>"+
-      			"<numpreguntas>" + t.getNumPreguntas() + "</numpreguntas>"+
+      			"<num_preguntas>" + t.getNumPreguntas() + "</num_preguntas>"+
       			"<nivel>" + t.getNivel() + "</nivel>"+
       		"</examen_teorico>";
 	}

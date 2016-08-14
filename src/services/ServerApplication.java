@@ -21,6 +21,8 @@ public class ServerApplication extends Application{
 		this.singletons.add(new CertificadoResource(dao));
 		this.singletons.add(new ExamenResource(dao));
 		this.singletons.add(new ModuloTeoricoResource(dao));
+		this.singletons.add(new PreguntaResource(dao));
+		this.singletons.add(new RespuestaResource(dao));
 		logger.info("Entramos en ServerApplication");
 	}
 	
@@ -34,6 +36,8 @@ public class ServerApplication extends Application{
 		set.add(CertificadoResource.class);
 		set.add(ExamenResource.class);
 		set.add(ModuloTeoricoResource.class);
+		set.add(PreguntaResource.class);
+		set.add(RespuestaResource.class);
 		return set;
 	}
 
