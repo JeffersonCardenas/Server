@@ -507,6 +507,70 @@ public class DAO {
 			}
 			return null;
 		}
+		
+		/**
+		 * Inserta un nuevo aprobado en la tabla aprueba_teorico
+		 * @param dni del alumno
+		 * @param idExamenTeorico del Examen Teorico aprobado
+		 * @param f fecha en la que se obtiene el aprobado
+		 * @return 1 si se ha insertado correctamente, 0 en caso contrario
+		 */
+		public int insertaAprobadoTeorico(String dni, int idExamenTeorico, Date f) {
+			PreparedStatement pst = null;
+			ResultSet rs          = null;
+			String query = null;
+			int resul = 0;
+			try{
+				this.connection = DBConnection.getConnection();
+				query = "insert into aprueba_teorico (Id_Examen_Teorico,DNI,Fecha) values (?,?,?)";
+				pst = this.connection.prepareStatement(query);
+				pst.setInt(1, idExamenTeorico);
+				pst.setString(2, dni);
+				pst.setDate(3, f);
+				resul = pst.executeUpdate();			
+			}
+			catch(SQLException e){
+				e.printStackTrace();
+			} finally {
+				try{
+					if (rs != null) rs.close();
+					if (pst != null) pst.close();
+					if (this.connection != null) this.connection.close();				
+				} catch (Exception e) {}
+			}
+			return resul;
+		}
+
+		/**
+		 * Inserta en la tabla tiene una nueva certificacion para el alumno
+		 * @param level nivel obtenido
+		 * @param dni del alumno
+		 * @return 1 si se ha podido insertar correctamente, 0 en otro caso
+		 */
+		public int obtieneCertificacion(int level, String dni) {
+			PreparedStatement pst = null;
+			ResultSet rs          = null;
+			String query = null;
+			int resul = 0;
+			try{
+				this.connection = DBConnection.getConnection();
+				query = "insert into tiene (Nivel,DNI) values (?,?)";
+				pst = this.connection.prepareStatement(query);
+				pst.setInt(1, level);
+				pst.setString(2, dni);
+				resul = pst.executeUpdate();			
+			}
+			catch(SQLException e){
+				e.printStackTrace();
+			} finally {
+				try{
+					if (rs != null) rs.close();
+					if (pst != null) pst.close();
+					if (this.connection != null) this.connection.close();				
+				} catch (Exception e) {}
+			}
+			return resul;
+		}
 
 
 }

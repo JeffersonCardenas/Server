@@ -19,7 +19,8 @@ public class ServerApplication extends Application{
 	public ServerApplication(){
 		this.singletons.add(new UserResource(dao));
 		this.singletons.add(new CertificadoResource(dao));
-		this.singletons.add(new ExamenResource(dao));
+		this.singletons.add(new ExamenTeoricoResource(dao));
+		this.singletons.add(new ExamenPracticoResource(dao));
 		this.singletons.add(new ModuloTeoricoResource(dao));
 		this.singletons.add(new PreguntaResource(dao));
 		this.singletons.add(new RespuestaResource(dao));
@@ -34,7 +35,8 @@ public class ServerApplication extends Application{
 		HashSet<Class<?>> set = new HashSet<Class<?>>();
 		set.add(UserResource.class);
 		set.add(CertificadoResource.class);
-		set.add(ExamenResource.class);
+		set.add(ExamenTeoricoResource.class);
+		set.add(ExamenPracticoResource.class);
 		set.add(ModuloTeoricoResource.class);
 		set.add(PreguntaResource.class);
 		set.add(RespuestaResource.class);

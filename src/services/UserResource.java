@@ -1,9 +1,5 @@
 package services;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import javax.ws.rs.DELETE;
@@ -19,6 +15,7 @@ import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.*;
 import data.User;
 import database.DAO;
+import tools.Tools;
 
 @Path("/user")
 public class UserResource {
@@ -70,19 +67,8 @@ public class UserResource {
 	@Produces(MediaType.TEXT_HTML)
 	public Response insertUser(@FormParam("nombre") String nombre, 
 			@FormParam("dni") String dni,@FormParam("pass") String pass){
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Calendar cal = Calendar.getInstance();
-		String fecha = dateFormat.format(cal.getTime());
-		java.util.Date date = null;
 		int success = 0;
-		try{
-			date = dateFormat.parse(fecha);			
-		}
-		catch(ParseException p){
-			p.printStackTrace();
-		}		
-		java.sql.Date fechaInsert = new java.sql.Date(date.getTime());
-		success = dao.insertaUsuario(nombre, dni, pass, fechaInsert);
+		success = dao.insertaUsuario(nombre, dni, pass, Tools.getDate());
 		String msg = "Insertado: "+nombre;
 		if (success>0) return Response.ok(msg).entity(msg).build();
 		else throw new WebApplicationException(Response.Status.NOT_MODIFIED);
