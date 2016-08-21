@@ -36,7 +36,8 @@ public class ExamenPracticoResource {
 		return "<examen_practico>"+
 				"<id_examen>"+p.getIdPractico()+"</id_examen>"+
       			"<nivel>" + p.getNivel() + "</nivel>"+
-      			"<numimagenes>" + p.getNumImagenes() + "</numimagenes>"+
+      			"<num_imagenes>" + p.getNumImagenes() + "</num_imagenes>"+
+      			"<tiempo_examen>"+ p.getTiempo_examen()+"</tiempo_examen>"+
       		"</examen_practico>";
 	}
 
