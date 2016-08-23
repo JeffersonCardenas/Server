@@ -15,9 +15,12 @@ public class UserServlet extends HttpServlet{
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = LogManager.getLogger(UserServlet.class);
+	private static String path;
 
 
 	public void init(ServletConfig config) throws ServletException{
+		String pathImg = config.getServletContext().getRealPath("/");
+		setPath(pathImg);
 		System.out.println("Log4JInitServlet is initializing log4j");
 		String log4jLocation = config.getInitParameter("log4jConfiguration");
 
@@ -38,6 +41,22 @@ public class UserServlet extends HttpServlet{
 			}
 		}
 		super.init(config);
+	}
+
+
+	/**
+	 * @return the path
+	 */
+	public static String getPath() {
+		return path;
+	}
+
+
+	/**
+	 * @param path the path to set
+	 */
+	public static void setPath(String p) {
+		path = p;
 	}
 		
 

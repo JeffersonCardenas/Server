@@ -36,6 +36,7 @@ public class ModuloTeoricoResource {
 	
 	@GET
 	@Path("pdf/{nivel}/{modulo}")
+	@Produces("application/pdf")
 	public byte[] getPDF(@PathParam("nivel") int nivel,@PathParam("modulo") int modulo){
         byte[] fileBytes = null;
         ModuloTeorico mod = dao.getModuloTeorico(nivel, modulo);

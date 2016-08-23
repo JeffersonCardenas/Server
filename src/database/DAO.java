@@ -284,294 +284,335 @@ public class DAO {
 	}
 	
 		
-		public ExamenTeorico getExamenTeorico(int level) {
-			PreparedStatement pst = null;
-			ResultSet rs = null;
-			ExamenTeorico result	= null;
-			String query = null;
-			try{
-				this.connection = DBConnection.getConnection();
-				query = "select Id_Examen,Nombre,Descripcion,Tiempo_Examen,num_preguntas from EXAMEN_TEORICO where Nivel=?";
-				pst = this.connection.prepareStatement(query);
-				pst.setInt(1, level);
-				rs = pst.executeQuery();
-				if (rs.next()){
-					int id = rs.getInt("Id_Examen");
-					String name = rs.getString("Nombre");
-					String d = rs.getString("Descripcion");
-					int tiempo = rs.getInt("Tiempo_Examen");
-					int num = rs.getInt("num_preguntas");
-					result = new ExamenTeorico(id,name,d,tiempo,num,level);
-				}			
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (rs != null) rs.close();
-					if (pst != null) pst.close();
-					if (this.connection != null) this.connection.close();
-				} catch (Exception e) {}
-			}
-			return result;
+	public ExamenTeorico getExamenTeorico(int level) {
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		ExamenTeorico result	= null;
+		String query = null;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "select Id_Examen,Nombre,Descripcion,Tiempo_Examen,num_preguntas from EXAMEN_TEORICO where Nivel=?";
+			pst = this.connection.prepareStatement(query);
+			pst.setInt(1, level);
+			rs = pst.executeQuery();
+			if (rs.next()){
+				int id = rs.getInt("Id_Examen");
+				String name = rs.getString("Nombre");
+				String d = rs.getString("Descripcion");
+				int tiempo = rs.getInt("Tiempo_Examen");
+				int num = rs.getInt("num_preguntas");
+				result = new ExamenTeorico(id,name,d,tiempo,num,level);
+			}			
 		}
-		
-		/**
-		 * 
-		 * @param n nivel de la certificacion
-		 * @param id id_modulo del Modulo Teorico
-		 * @return Modulo Teorico de la BBDD
-		 */
-		public ModuloTeorico getModuloTeorico(int n,int id){
-			PreparedStatement pst = null;
-			ResultSet rs = null;
-			ModuloTeorico result	= null;
-			String query = null;
-			try{
-				this.connection = DBConnection.getConnection();
-				query = "select Id_Modulo,Nivel,PDF from modulo_teorico where Nivel=? and Id_Modulo=?";
-				pst = this.connection.prepareStatement(query);
-				pst.setInt(1, n);
-				pst.setInt(2, id);
-				rs = pst.executeQuery();
-				if (rs.next()){
-					int idmod = rs.getInt("Id_Modulo");
-					int l = rs.getInt("Nivel");
-					Blob p = rs.getBlob("PDF");
-					if (!rs.wasNull()){
-						byte[] pd = p.getBytes(1, (int)p.length());
-						result = new ModuloTeorico(idmod,l,pd);
-					}
-					else result = new ModuloTeorico(idmod,l);
-				}			
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (rs != null) rs.close();
-					if (pst != null) pst.close();
-					if (this.connection != null) this.connection.close();
-				} catch (Exception e) {}
-			}
-			return result;
+		catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();
+			} catch (Exception e) {}
 		}
+		return result;
+	}
 		
-		/**
-		 * Devuelve una lista de todos los modulos teoricos pertenecientes a un nivel
-		 * @param nivel de certificacion
-		 * @return Lista de Modulos Teoricos
-		 */
-		public List<ModuloTeorico> getListModTeorico(int nivel) {
-			Connection con        = null;
-			PreparedStatement pst = null;
-			ResultSet rs          = null;
-			List<ModuloTeorico> resul = new LinkedList<ModuloTeorico>();
-			try{
-				con = DBConnection.getConnection();
-				String sql = "select Id_Modulo,PDF from modulo_teorico where Nivel=?";
-				pst = con.prepareStatement(sql);
-				pst.setInt(1, nivel);
-				rs = pst.executeQuery();
-				while (rs.next()) {
-					int id = rs.getInt("Id_Modulo");
-					Blob b = rs.getBlob("PDF");
-					if (!rs.wasNull()){
-						byte[] pdf = b.getBytes(1, (int)b.length());
-						resul.add(new ModuloTeorico(id,nivel,pdf));
-					}
-					else resul.add(new ModuloTeorico(id,nivel));
+	/**
+	 * 
+	 * @param n nivel de la certificacion
+	 * @param id id_modulo del Modulo Teorico
+	 * @return Modulo Teorico de la BBDD
+	 */
+	public ModuloTeorico getModuloTeorico(int n,int id){
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		ModuloTeorico result	= null;
+		String query = null;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "select Id_Modulo,Nivel,PDF from modulo_teorico where Nivel=? and Id_Modulo=?";
+			pst = this.connection.prepareStatement(query);
+			pst.setInt(1, n);
+			pst.setInt(2, id);
+			rs = pst.executeQuery();
+			if (rs.next()){
+				int idmod = rs.getInt("Id_Modulo");
+				int l = rs.getInt("Nivel");
+				Blob p = rs.getBlob("PDF");
+				if (!rs.wasNull()){
+					byte[] pd = p.getBytes(1, (int)p.length());
+					result = new ModuloTeorico(idmod,l,pd);
 				}
-				return resul;
-			}
-			catch (SQLException e){
-				e.printStackTrace();
-			}
-			finally {
-				try {
-					if (rs != null) rs.close();
-					if (pst != null) pst.close();
-					if (con != null) con.close();
-				} catch (Exception e) {}
-			}
-			return null;
+				else result = new ModuloTeorico(idmod,l);
+			}			
 		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();
+			} catch (Exception e) {}
+		}
+		return result;
+	}
 		
-		/**
-		 * Inserta un nuevo modulo teorico en la BBDD
-		 * @param m Modulo Teorico
-		 * @return
-		 */
-		public int insertModuloTeorico(ModuloTeorico m){
-			PreparedStatement pst = null;
-			ResultSet rs          = null;
-			String query = null;
-			int resul = 0;
-			Blob blob = null;
-			try{
-				this.connection = DBConnection.getConnection();
-				query = "insert into modulo_teorico (Id_Modulo,Nivel,PDF) values (?,?,?)";
-				pst = this.connection.prepareStatement(query);
-				pst.setInt(1, m.getId_modulo());
-				pst.setInt(2, m.getNivel());
-				if (m.getPdf()!=null){
-					blob = this.connection.createBlob();
-					blob.setBytes(1, m.getPdf());
-					pst.setBlob(3, blob);
+	/**
+	 * Devuelve una lista de todos los modulos teoricos pertenecientes a un nivel
+	 * @param nivel de certificacion
+	 * @return Lista de Modulos Teoricos
+	 */
+	public List<ModuloTeorico> getListModTeorico(int nivel) {
+		Connection con        = null;
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		List<ModuloTeorico> resul = new LinkedList<ModuloTeorico>();
+		try{
+			con = DBConnection.getConnection();
+			String sql = "select Id_Modulo,PDF from modulo_teorico where Nivel=?";
+			pst = con.prepareStatement(sql);
+			pst.setInt(1, nivel);
+			rs = pst.executeQuery();
+			while (rs.next()) {
+				int id = rs.getInt("Id_Modulo");
+				Blob b = rs.getBlob("PDF");
+				if (!rs.wasNull()){
+					byte[] pdf = b.getBytes(1, (int)b.length());
+					resul.add(new ModuloTeorico(id,nivel,pdf));
 				}
-				else pst.setBlob(3, blob);
-				resul = pst.executeUpdate();		
-			}
-			catch(SQLException e){
-				e.printStackTrace();
-			} finally {
-				try{
-					if (rs != null) rs.close();
-					if (pst != null) pst.close();
-					if (this.connection != null) this.connection.close();				
-				} catch (Exception e) {}
-			}
-			return resul;
-			
-		}
-		
-		/**
-		 * Accede a BBDD y devuelve una lista con las preguntas pertenecientes a un examen
-		 * @param idExamen
-		 * @return Lista de Pregunta o null si no hay preguntas para esa id
-		 */
-		public List<Pregunta> getListaPreguntasFromExamen(int idExamen) {
-			Connection con        = null;
-			PreparedStatement pst = null;
-			ResultSet rs          = null;
-			List<Pregunta> resul = new LinkedList<Pregunta>();
-			try{
-				con = DBConnection.getConnection();
-				String sql = "select Id_Pregunta,Enunciado from pregunta where Id_Examen=?";
-				pst = con.prepareStatement(sql);
-				pst.setInt(1, idExamen);
-				rs = pst.executeQuery();
-				while (rs.next()) {
-					int id = rs.getInt("Id_Pregunta");
-					String e = rs.getString("Enunciado");
-					resul.add(new Pregunta(id,e,idExamen));
-				}
-				return resul;
-			}
-			catch (SQLException e){
-				e.printStackTrace();
-			}
-			finally {
-				try {
-					if (rs != null) rs.close();
-					if (pst != null) pst.close();
-					if (con != null) con.close();
-				} catch (Exception e) {}
-			}
-			return null;
-		}
-		
-		/**
-		 * Accede a BBDD y devuelve una lista de Respuestas perteneciente a una pregunta
-		 * @param idPregunta
-		 * @return Lista de Respuestas o null si hay un error
-		 */
-		public List<Respuesta> getListaRespuestasFromPregunta(int idPregunta) {
-			Connection con        = null;
-			PreparedStatement pst = null;
-			ResultSet rs          = null;
-			List<Respuesta> resul = new LinkedList<Respuesta>();
-			try{
-				con = DBConnection.getConnection();
-				String sql = "select Id_Respuesta,Es_Correcta,Enunciado from respuesta where Id_Pregunta=?";
-				pst = con.prepareStatement(sql);
-				pst.setInt(1, idPregunta);
-				rs = pst.executeQuery();
-				while (rs.next()) {
-					int id = rs.getInt("Id_Respuesta");
-					int c = rs.getInt("Es_Correcta");
-					String e = rs.getString("Enunciado");
-					resul.add(new Respuesta(id,c,e,idPregunta));
-					
-				}
-				return resul;
-			}
-			catch (SQLException e){
-				e.printStackTrace();
-			}
-			finally {
-				try {
-					if (rs != null) rs.close();
-					if (pst != null) pst.close();
-					if (con != null) con.close();
-				} catch (Exception e) {}
-			}
-			return null;
-		}
-		
-		/**
-		 * Inserta un nuevo aprobado en la tabla aprueba_teorico
-		 * @param dni del alumno
-		 * @param idExamenTeorico del Examen Teorico aprobado
-		 * @param f fecha en la que se obtiene el aprobado
-		 * @return 1 si se ha insertado correctamente, 0 en caso contrario
-		 */
-		public int insertaAprobadoTeorico(String dni, int idExamenTeorico, Date f) {
-			PreparedStatement pst = null;
-			ResultSet rs          = null;
-			String query = null;
-			int resul = 0;
-			try{
-				this.connection = DBConnection.getConnection();
-				query = "insert into aprueba_teorico (Id_Examen_Teorico,DNI,Fecha) values (?,?,?)";
-				pst = this.connection.prepareStatement(query);
-				pst.setInt(1, idExamenTeorico);
-				pst.setString(2, dni);
-				pst.setDate(3, f);
-				resul = pst.executeUpdate();			
-			}
-			catch(SQLException e){
-				e.printStackTrace();
-			} finally {
-				try{
-					if (rs != null) rs.close();
-					if (pst != null) pst.close();
-					if (this.connection != null) this.connection.close();				
-				} catch (Exception e) {}
+				else resul.add(new ModuloTeorico(id,nivel));
 			}
 			return resul;
 		}
+		catch (SQLException e){
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (con != null) con.close();
+			} catch (Exception e) {}
+		}
+		return null;
+	}
+		
+	/**
+	 * Inserta un nuevo modulo teorico en la BBDD
+	 * @param m Modulo Teorico
+	 * @return
+	 */
+	public int insertModuloTeorico(ModuloTeorico m){
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		int resul = 0;
+		Blob blob = null;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "insert into modulo_teorico (Id_Modulo,Nivel,PDF) values (?,?,?)";
+			pst = this.connection.prepareStatement(query);
+			pst.setInt(1, m.getId_modulo());
+			pst.setInt(2, m.getNivel());
+			if (m.getPdf()!=null){
+				blob = this.connection.createBlob();
+				blob.setBytes(1, m.getPdf());
+				pst.setBlob(3, blob);
+			}
+			else pst.setBlob(3, blob);
+			resul = pst.executeUpdate();		
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();				
+			} catch (Exception e) {}
+		}
+		return resul;
+	}
+		
+	/**
+	 * Accede a BBDD y devuelve una lista con las preguntas pertenecientes a un examen
+	 * @param idExamen
+	 * @return Lista de Pregunta o null si no hay preguntas para esa id
+	 */
+	public List<Pregunta> getListaPreguntasFromExamen(int idExamen) {
+		Connection con        = null;
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		List<Pregunta> resul = new LinkedList<Pregunta>();
+		try{
+			con = DBConnection.getConnection();
+			String sql = "select Id_Pregunta,Enunciado from pregunta where Id_Examen=?";
+			pst = con.prepareStatement(sql);
+			pst.setInt(1, idExamen);
+			rs = pst.executeQuery();
+			while (rs.next()) {
+				int id = rs.getInt("Id_Pregunta");
+				String e = rs.getString("Enunciado");
+				resul.add(new Pregunta(id,e,idExamen));
+			}
+			return resul;
+		}
+		catch (SQLException e){
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (con != null) con.close();
+			} catch (Exception e) {}
+		}
+		return null;
+	}
+		
+	/**
+	 * Accede a BBDD y devuelve una lista de Respuestas perteneciente a una pregunta
+	 * @param idPregunta
+	 * @return Lista de Respuestas o null si hay un error
+	 */
+	public List<Respuesta> getListaRespuestasFromPregunta(int idPregunta) {
+		Connection con        = null;
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		List<Respuesta> resul = new LinkedList<Respuesta>();
+		try{
+			con = DBConnection.getConnection();
+			String sql = "select Id_Respuesta,Es_Correcta,Enunciado from respuesta where Id_Pregunta=?";
+			pst = con.prepareStatement(sql);
+			pst.setInt(1, idPregunta);
+			rs = pst.executeQuery();
+			while (rs.next()) {
+				int id = rs.getInt("Id_Respuesta");
+				int c = rs.getInt("Es_Correcta");
+				String e = rs.getString("Enunciado");
+				resul.add(new Respuesta(id,c,e,idPregunta));
+			}
+			return resul;
+		}
+		catch (SQLException e){
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (con != null) con.close();
+			} catch (Exception e) {}
+		}
+		return null;
+	}
+		
+	/**
+	 * Inserta un nuevo aprobado en la tabla aprueba_teorico
+	 * @param dni del alumno
+	 * @param idExamenTeorico del Examen Teorico aprobado
+	 * @param f fecha en la que se obtiene el aprobado
+	 * @return 1 si se ha insertado correctamente, 0 en caso contrario
+	 */
+	public int insertaAprobadoTeorico(String dni, int idExamenTeorico, Date f) {
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		int resul = 0;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "insert into aprueba_teorico (Id_Examen_Teorico,DNI,Fecha) values (?,?,?)";
+			pst = this.connection.prepareStatement(query);
+			pst.setInt(1, idExamenTeorico);
+			pst.setString(2, dni);
+			pst.setDate(3, f);
+			resul = pst.executeUpdate();			
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();				
+			} catch (Exception e) {}
+		}
+		return resul;
+	}
 
-		/**
-		 * Inserta en la tabla tiene una nueva certificacion para el alumno
-		 * @param level nivel obtenido
-		 * @param dni del alumno
-		 * @return 1 si se ha podido insertar correctamente, 0 en otro caso
-		 */
-		public int obtieneCertificacion(int level, String dni) {
-			PreparedStatement pst = null;
-			ResultSet rs          = null;
-			String query = null;
-			int resul = 0;
-			try{
-				this.connection = DBConnection.getConnection();
-				query = "insert into tiene (Nivel,DNI) values (?,?)";
-				pst = this.connection.prepareStatement(query);
-				pst.setInt(1, level);
-				pst.setString(2, dni);
-				resul = pst.executeUpdate();			
-			}
-			catch(SQLException e){
-				e.printStackTrace();
-			} finally {
-				try{
-					if (rs != null) rs.close();
-					if (pst != null) pst.close();
-					if (this.connection != null) this.connection.close();				
-				} catch (Exception e) {}
-			}
-			return resul;
+	/**
+	 * Inserta en la tabla tiene una nueva certificacion para el alumno
+	 * @param level nivel obtenido
+	 * @param dni del alumno
+	 * @return 1 si se ha podido insertar correctamente, 0 en otro caso
+	 */
+	public int obtieneCertificacion(int level, String dni) {
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		int resul = 0;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "insert into tiene (Nivel,DNI) values (?,?)";
+			pst = this.connection.prepareStatement(query);
+			pst.setInt(1, level);
+			pst.setString(2, dni);
+			resul = pst.executeUpdate();			
 		}
+		catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();				
+			} catch (Exception e) {}
+		}
+		return resul;
+	}
+	
+	/**
+	 * Accede a BBDD y devuelve una entidad de tipo Imagen
+	 * @param id de la imagen
+	 * @param examen id del examen al que pertenece esta imagen
+	 * @return devuelve un objeto de tipo Imagen o null si no existe en BBDD
+	 */
+	public Imagen getImagen(int id,int examen){
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		Imagen result	= null;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "select normal,organico,inorganico,bn,alto,ancho,Id_Objeto "
+					+ "from imagen where Id_Imagen=? and Id_Examen=?";
+			pst = this.connection.prepareStatement(query);
+			pst.setInt(1, id);
+			pst.setInt(2, examen);
+			rs = pst.executeQuery();
+			if (rs.next()){
+				String n = rs.getString("normal");
+				String o = rs.getString("organico");
+				String ino = rs.getString("inorganico");
+				String bn = rs.getString("bn");
+				float al = rs.getFloat("alto");
+				float an = rs.getFloat("ancho");
+				int id_o = rs.getInt("Id_Objeto");
+				result = new Imagen(id,n,o,ino,bn,al,an,id_o,examen);
+			}			
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();
+			} catch (Exception e) {}
+		}
+		return result;
+		
+	}
 
 
 }
