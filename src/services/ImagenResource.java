@@ -6,12 +6,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
 
 import data.Imagen;
 import database.DAO;
@@ -47,8 +45,8 @@ public class ImagenResource {
 				default: path = imagen.getNormal(); break;
 			}
 			try{
-				//El path debe ser /img/id_examen/{limpio-prohibido}/id_imagen/{tipo}.png
-				//Ejemplo /img/2/limpio/1/bn.png
+				//El path debe ser /img/id_examen/id_imagen/{tipo}.png
+				//Ejemplo /img/2/1/bn.png
 				System.out.println("El path es: "+ROOT+path);
 				File file = new File(ROOT+path);
 				if (file.exists()){
