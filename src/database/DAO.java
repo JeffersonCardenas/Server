@@ -584,7 +584,7 @@ public class DAO {
 		Imagen result	= null;
 		try{
 			this.connection = DBConnection.getConnection();
-			query = "select normal,organico,inorganico,bn,alto,ancho,Id_Objeto "
+			query = "select normal,organico,inorganico,bn,Id_Objeto "
 					+ "from imagen where Id_Imagen=? and Id_Examen=?";
 			pst = this.connection.prepareStatement(query);
 			pst.setInt(1, id);
@@ -595,10 +595,8 @@ public class DAO {
 				String o = rs.getString("organico");
 				String ino = rs.getString("inorganico");
 				String bn = rs.getString("bn");
-				float al = rs.getFloat("alto");
-				float an = rs.getFloat("ancho");
 				int id_o = rs.getInt("Id_Objeto");
-				result = new Imagen(id,n,o,ino,bn,al,an,id_o,examen);
+				result = new Imagen(id,n,o,ino,bn,id_o,examen);
 			}			
 		}
 		catch (SQLException e) {
@@ -610,7 +608,86 @@ public class DAO {
 				if (this.connection != null) this.connection.close();
 			} catch (Exception e) {}
 		}
-		return result;
+		return result;	
+	}
+	
+	/**
+	 * Devuelve un objeto de tipo imagen con el id pasado por parámetro
+	 * @param idImagen
+	 * @return Objeto Imagen o null si no existe
+	 */
+	public Imagen getImagenFromId(int idImagen){
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		Imagen result	= null;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "select normal,organico,inorganico,bn,Id_Objeto,Id_Examen "
+					+ "from imagen where Id_Imagen=?";
+			pst = this.connection.prepareStatement(query);
+			pst.setInt(1, idImagen);
+			rs = pst.executeQuery();
+			if (rs.next()){
+				String n = rs.getString("normal");
+				String o = rs.getString("organico");
+				String ino = rs.getString("inorganico");
+				String bn = rs.getString("bn");
+				int id_o = rs.getInt("Id_Objeto");
+				int id_e = rs.getInt("Id_Examen");
+				result = new Imagen(idImagen,n,o,ino,bn,id_o,id_e);
+			}			
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();
+			} catch (Exception e) {}
+		}
+		return result;	
+	}
+	
+	/**
+	 * Devuelve una lista de imagenes pertenecientes a un examen
+	 * @param examen id del examen practico al que pertenecen las imagenes
+	 * @return List de objetos de tipo Imagen, vacia si no hay ningun elemento en BBDD
+	 */
+	public List<Imagen> getListaImagenesFromExamen(int examen){
+		Connection con        = null;
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		List<Imagen> resul = new LinkedList<Imagen>();
+		try{
+			con = DBConnection.getConnection();
+			String sql = "select Id_Imagen,normal,organico,inorganico,bn,Id_Objeto "
+					+ "from imagen where Id_Examen=?";
+			pst = con.prepareStatement(sql);
+			pst.setInt(1, examen);
+			rs = pst.executeQuery();
+			while (rs.next()) {
+				int id = rs.getInt("Id_Imagen");
+				String n = rs.getString("normal");
+				String o = rs.getString("organico");
+				String in = rs.getString("inorganico");
+				String bn = rs.getString("bn");
+				int id_o = rs.getInt("Id_Objeto");
+				resul.add(new Imagen(id,n,o,in,bn,id_o,examen));
+			}
+		}
+		catch (SQLException e){
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (con != null) con.close();
+			} catch (Exception e) {}
+		}
+		return resul;
 		
 	}
 

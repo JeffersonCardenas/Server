@@ -4,12 +4,17 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 import data.Imagen;
 import database.DAO;
@@ -65,6 +70,59 @@ public class ImagenResource {
 			}
 		}
 		return fileBytes;
+	}
+	
+	@GET
+	@Path("{id}")
+	public String getImageFromId(@PathParam("id") int id){
+		final Imagen image = dao.getImagenFromId(id);
+		if (image==null) throw new WebApplicationException(Response.Status.NOT_FOUND);
+		else return this.objectToXml(image);
+	}
+	
+	@GET
+	@Path("/imagenes/{examen}")
+	public String getListImagesFromExam(@PathParam("examen") int examen){
+		List<Imagen> l = dao.getListaImagenesFromExamen(examen);
+		if (!l.isEmpty()){
+			String resul = this.listToXml(l);
+			return resul;
+		}
+		else throw new WebApplicationException(Response.Status.NOT_FOUND);
+	}
+	
+	/**
+	 * Devuelve un objeto en formato xml
+	 * @param im objeto de tipo imagen
+	 * @return string que representa un objeto de tipo imagen
+	 */
+	private String objectToXml(Imagen im){
+		return "<imagen>"+
+				"<id_imagen>"+im.getId_imagen()+"</id_imagen>"+
+      			"<normal>" + im.getNormal() + "</normal>"+
+      			"<organico>" + im.getOrganico() + "</organico>"+
+      			"<inorganico>" + im.getInorganico() + "</inorganico>"+
+      			"<bn>" + im.getBn() + "</bn>"+
+      			"<id_objeto>" + im.getId_objeto() + "</id_objeto>"+
+      			"<id_examen>" + im.getId_examen() + "</id_examen>"+
+      		"</imagen>";
+	}
+	
+	/**
+	 * Devuelve una lista de imagenes
+	 * @param l lista de objetos de tipo imagen
+	 * @return String que representa una lista de imagenes en formato xml
+	 */
+	private String listToXml(List<Imagen> l){
+		String result = "<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>"+"<imagenes>";
+		
+		Iterator<Imagen> it = l.iterator();
+		while (it.hasNext()){
+			result+=objectToXml(it.next());
+		}
+		result+="</imagenes>";
+		return result;
+		
 	}
 
 }

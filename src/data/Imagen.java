@@ -7,22 +7,17 @@ public class Imagen {
 	private String organico;
 	private String inorganico;
 	private String bn;
-	private float alto;
-	private float ancho;
 	private int id_objeto;
 	private int id_examen;
 	
 	public Imagen(){}
 	
-	public Imagen(int id, String n, String org, String ino, String blanco, float al, float anc,
-			int objeto, int examen){
+	public Imagen(int id, String n, String org, String ino, String blanco, int objeto, int examen){
 		this.id_imagen=id;
 		this.normal=n;
 		this.organico=org;
 		this.inorganico=ino;
 		this.bn=blanco;
-		this.alto=al;
-		this.ancho=anc;
 		this.id_objeto=objeto;
 		this.id_examen=examen;
 	}
@@ -95,34 +90,6 @@ public class Imagen {
 	 */
 	public void setBn(String bn) {
 		this.bn = bn;
-	}
-
-	/**
-	 * @return the alto
-	 */
-	public float getAlto() {
-		return alto;
-	}
-
-	/**
-	 * @param alto the alto to set
-	 */
-	public void setAlto(float alto) {
-		this.alto = alto;
-	}
-
-	/**
-	 * @return the ancho
-	 */
-	public float getAncho() {
-		return ancho;
-	}
-
-	/**
-	 * @param ancho the ancho to set
-	 */
-	public void setAncho(float ancho) {
-		this.ancho = ancho;
 	}
 
 	/**
