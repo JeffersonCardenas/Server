@@ -102,6 +102,14 @@ public class UserResource {
 				.entity("No se ha podido actualizar el usuario "+dni).build();
 	}
 	
+	@POST
+	@Path("tieneteorico")
+	public Response tieneTeoricoAprobado(@FormParam("dni") String dni,@FormParam("id") int id){
+		int resul = dao.tieneAprobadoTeorico(dni,id);
+		if (resul>0) return Response.status(Response.Status.OK).build();
+		else return Response.status(Response.Status.NOT_FOUND).build();
+	}
+	
 	protected String userToXml(User u){
 		return "<usuario>"+
 					"<dni>"+u.getDNI()+"</dni>"+

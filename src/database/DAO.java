@@ -188,6 +188,39 @@ public class DAO {
 		return null;
 	}
 	
+	/**
+	 * Comprueba si el alumno tiene aprobado un examen teorico
+	 * @param dni del alumno
+	 * @param idExamen examen teorico
+	 * @return devuelve 1 si el alumno ha aprobado el examen teorico, 0 en caso contrario
+	 */
+	public int tieneAprobadoTeorico(String dni, int idExamen) {
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		int resul = 0;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "select dni from aprueba_teorico a join examen_teorico b where "
+					+ "a.Id_Examen_Teorico=b.Id_Examen and a.Id_Examen_Teorico=? and a.DNI=?";
+			pst = this.connection.prepareStatement(query);
+			pst.setInt(1, idExamen);
+			pst.setString(2, dni);
+			rs = pst.executeQuery();
+			if (rs.next()) resul=1;
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();				
+			} catch (Exception e) {}
+		}
+		return resul;
+	}
+	
 	public List<Certificados> getCertificados() {
 		Connection con        = null;
 		PreparedStatement pst = null;

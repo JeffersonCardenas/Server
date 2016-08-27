@@ -52,10 +52,8 @@ public class ImagenResource {
 			try{
 				//El path debe ser /img/id_examen/id_imagen/{tipo}.png
 				//Ejemplo /img/2/1/bn.png
-				System.out.println("El path es: "+ROOT+path);
 				File file = new File(ROOT+path);
 				if (file.exists()){
-					System.out.println("File found at: "+path);
 					FileInputStream fis = new FileInputStream(file);
 		            BufferedInputStream inputStream = new BufferedInputStream(fis);
 		            fileBytes = new byte[(int) file.length()];
@@ -74,6 +72,7 @@ public class ImagenResource {
 	
 	@GET
 	@Path("{id}")
+	@Produces("application/xml")
 	public String getImageFromId(@PathParam("id") int id){
 		final Imagen image = dao.getImagenFromId(id);
 		if (image==null) throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -82,6 +81,7 @@ public class ImagenResource {
 	
 	@GET
 	@Path("/imagenes/{examen}")
+	@Produces("application/xml")
 	public String getListImagesFromExam(@PathParam("examen") int examen){
 		List<Imagen> l = dao.getListaImagenesFromExamen(examen);
 		if (!l.isEmpty()){
