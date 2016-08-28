@@ -15,10 +15,14 @@ public class DAO {
 	
 	private Connection connection;
 	
-	public DAO(){
-		
-	}
+	public DAO(){ }
 	
+	/**
+	 * Accede a BBDD y devuelve un usuario
+	 * @param dni String
+	 * @param pass String
+	 * @return objeto de tipo User, o null si no existe
+	 */
 	public User getUser(String dni, String pass){
 		PreparedStatement pst = null;
 		ResultSet rs = null;
@@ -52,6 +56,14 @@ public class DAO {
 		return result;		
 	}
 	
+	/**
+	 * Inserta un usuario en BBDD
+	 * @param name String
+	 * @param dni String
+	 * @param pass String
+	 * @param f Date
+	 * @return 1 si se ha podido insertar el usuario correctamente, 0 en caso contrario
+	 */
 	public int insertaUsuario(String name, String dni, String pass, Date f) {
 		PreparedStatement pst = null;
 		ResultSet rs          = null;
@@ -104,6 +116,11 @@ public class DAO {
 		return resul;
 	}
 	
+	/**
+	 * Comprueba si un usuario se encuentra en BBDD
+	 * @param dni String
+	 * @return true si existe el usuario, false en caso contrario
+	 */
 	public boolean existeUsuario(String dni) {
 		PreparedStatement pst = null;
 		ResultSet rs          = null;
@@ -129,6 +146,13 @@ public class DAO {
 		return resul;
 	}
 	
+	/**
+	 * Actualiza los datos de un usuario en BBDD
+	 * @param dni String
+	 * @param name String
+	 * @param pass String
+	 * @return 1 si se han actualizado correctamente los datos, 0 en caso contrario
+	 */
 	public int updateUsuario(String dni, String name, String pass) {
 		PreparedStatement pst = null;
 		ResultSet rs          = null;
@@ -155,6 +179,10 @@ public class DAO {
 		return resul;
 	}
 	
+	/**
+	 * Devuelve una lista con los usuarios del sistema
+	 * @return List de objetos de tipo User
+	 */
 	public List<User> getUserList() {
 		Connection con        = null;
 		PreparedStatement pst = null;
@@ -221,6 +249,10 @@ public class DAO {
 		return resul;
 	}
 	
+	/**
+	 * Devuelve todas las Certificaciones de la BBDD
+	 * @return List de objetos de tipo Certificados
+	 */
 	public List<Certificados> getCertificados() {
 		Connection con        = null;
 		PreparedStatement pst = null;
@@ -285,7 +317,11 @@ public class DAO {
 		return null;
 	}
 	
-	
+	/**
+	 * Devuelve el Examen Practico de un determinado nivel de Certificacion
+	 * @param level int
+	 * @return Examen Practico
+	 */
 	public ExamenPractico getExamenPractico(int level) {
 		PreparedStatement pst = null;
 		ResultSet rs = null;
@@ -316,7 +352,11 @@ public class DAO {
 		return result;
 	}
 	
-		
+	/**
+	 * Devuelve un Examen Teorico de una determinada Certificacion	
+	 * @param level int
+	 * @return Examen Teorico
+	 */
 	public ExamenTeorico getExamenTeorico(int level) {
 		PreparedStatement pst = null;
 		ResultSet rs = null;
@@ -722,6 +762,78 @@ public class DAO {
 		}
 		return resul;
 		
+	}
+	
+	/**
+	 * Inserta un aprobado practico
+	 * @param dni String del alumno que lo ha aprobado
+	 * @param idExamenPractico int
+	 * @param fecha Date
+	 * @return un 1 si se ha insertado correctamente los datos en la tabla Aprueba_Practico, 0 en otro caso
+	 */
+	public int insertaAprobadoPractico(String dni, int idExamenPractico, Date fecha){
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		int resul = 0;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "insert into aprueba_practico (Id_Examen_Practico,DNI,Fecha) values (?,?,?)";
+			pst = this.connection.prepareStatement(query);
+			pst.setInt(1, idExamenPractico);
+			pst.setString(2, dni);
+			pst.setDate(3, fecha);
+			resul = pst.executeUpdate();			
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();				
+			} catch (Exception e) {}
+		}
+		return resul;
+	}
+	
+	/**
+	 * Devuelve un Objeto Prohibido de la BBDD
+	 * @param idObjeto int
+	 * @return el objeto prohibido si existe ese id en BBDD, null en caso contrario
+	 */
+	public ObjetoProhibido getObjetoProhibido(int idObjeto){
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		ObjetoProhibido result	= null;
+		String query = null;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "select Id_Objeto,Nombre,posx,posy,alto,ancho,Id_Arma from objeto_prohibido where Id_Objeto=?";
+			pst = this.connection.prepareStatement(query);
+			pst.setInt(1, idObjeto);
+			rs = pst.executeQuery();
+			if (rs.next()){
+				int id = rs.getInt("Id_Objeto");
+				String name = rs.getString("Nombre");
+				int x = rs.getInt("posx");
+				int y = rs.getInt("posy");
+				int alt = rs.getInt("alto");
+				int anc = rs.getInt("ancho");
+				int arma = rs.getInt("Id_Arma");
+				result = new ObjetoProhibido(id,name,x,y,alt,anc,arma);
+			}			
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();
+			} catch (Exception e) {}
+		}
+		return result;
 	}
 
 

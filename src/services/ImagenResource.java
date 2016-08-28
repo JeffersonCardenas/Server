@@ -60,7 +60,7 @@ public class ImagenResource {
 		            inputStream.read(fileBytes);
 		            inputStream.close();
 				}
-				else System.out.println("File not found");
+				else System.out.println("File not found: "+path);
 				
 			}
 			catch (IOException e){

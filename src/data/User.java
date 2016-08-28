@@ -1,8 +1,5 @@
 package data;
 
-import java.beans.XMLEncoder;
-import java.io.ByteArrayOutputStream;
-
 public class User {
 	
 	private String DNI;
@@ -64,18 +61,5 @@ public class User {
 	public String toString(){
 		return "Soy "+this.nombre+"con DNI "+this.DNI;		
 	}
-	
-	public String toXML() {
-        String xml = null;
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            XMLEncoder encoder = new XMLEncoder(out);
-            encoder.writeObject(this); // serialize to XML
-            encoder.close();
-            xml = out.toString(); // stringify
-        }
-        catch(Exception e) { }
-        return xml;
-    }
 
 }

@@ -9,9 +9,7 @@ public class ExamenTeorico {
 	private int numPreguntas;
 	private int nivel;
 	
-	public ExamenTeorico(){
-		
-	}
+	public ExamenTeorico(){	}
 	
 	public ExamenTeorico(int id, String name, String d, int t, int num, int l){
 		this.idTeorico=id;
@@ -68,8 +66,6 @@ public class ExamenTeorico {
 
 	public void setNivel(int nivel) {
 		this.nivel = nivel;
-	}
-	
-	
+	}	
 
 }

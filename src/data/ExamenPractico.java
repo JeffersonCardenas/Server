@@ -52,8 +52,6 @@ public class ExamenPractico {
 	 */
 	public void setTiempo_examen(int tiempo_examen) {
 		this.tiempo_examen = tiempo_examen;
-	}
-	
-	
+	}	
 
 }
