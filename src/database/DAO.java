@@ -252,6 +252,38 @@ public class DAO {
 	}
 	
 	/**
+	 * Comprueba si un usuario tiene un examen practico aprobado previamente
+	 * @param dni String
+	 * @param idPractico int
+	 * @return 1 si el usuario ha aprobado el practico, 0 en caso contrario
+	 */
+	public int tieneAprobadoPractico(String dni, int idPractico){
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		int resul = 0;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "select DNI from aprueba_practico where Id_Examen_Practico=? and DNI=?";
+			pst = this.connection.prepareStatement(query);
+			pst.setInt(1, idPractico);
+			pst.setString(2, dni);
+			rs = pst.executeQuery();
+			if (rs.next()) resul=1;
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();				
+			} catch (Exception e) {}
+		}
+		return resul;
+	}
+	
+	/**
 	 * Devuelve todas las Certificaciones de la BBDD
 	 * @return List de objetos de tipo Certificados
 	 */

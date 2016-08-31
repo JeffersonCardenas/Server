@@ -110,6 +110,13 @@ public class UserResource {
 		else return Response.status(Response.Status.NOT_FOUND).build();
 	}
 	
+	@POST
+	@Path("tienepractico")
+	public Response tienePracticoAprobado(@FormParam("dni") String dni, @FormParam("id") int id){
+		if (dao.tieneAprobadoPractico(dni, id)>0) return Response.status(Response.Status.OK).build();
+		else return Response.status(Response.Status.NOT_FOUND).build();
+	}
+	
 	protected String userToXml(User u){
 		return "<usuario>"+
 					"<dni>"+u.getDNI()+"</dni>"+
