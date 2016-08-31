@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.mysql.jdbc.Statement;
+
 import data.*;
 
 public class DAO {
@@ -822,6 +824,110 @@ public class DAO {
 				int anc = rs.getInt("ancho");
 				int arma = rs.getInt("Id_Arma");
 				result = new ObjetoProhibido(id,name,x,y,alt,anc,arma);
+			}			
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();
+			} catch (Exception e) {}
+		}
+		return result;
+	}
+	
+	/**
+	 * Inserta una pregunta en la BBDD
+	 * @param enunciado String
+	 * @param idExamen int
+	 * @return el id auto generado al insertar una nueva columna en la tabla Pregunta
+	 */
+	public int insertaPregunta(String enunciado, int idExamen) {
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		int resul = 0;
+		int lastid = 0;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "insert into pregunta (Enunciado,Id_Examen) values (?,?)";
+			pst = this.connection.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);
+			pst.setString(1, enunciado);
+			pst.setInt(2, idExamen);
+			resul = pst.executeUpdate();
+			rs = pst.getGeneratedKeys();
+			if (rs.next() && resul>0){
+				lastid = rs.getInt(1);
+			}
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();				
+			} catch (Exception e) {}
+		}
+		return lastid;
+	}
+	
+	/**
+	 * Inserta una nueva respuesta perteneciente a una pregunta determinada
+	 * @param idPregunta int
+	 * @param resp String que representa el enunciado de la respuesta
+	 * @param correcta int 1 si es correcta, 0 si es falsa
+	 * @return int 1 si se ha insertado correctamente, 0 si ha habido algun error
+	 */
+	public int insertaRespuesta(int idPregunta, String resp, int correcta){
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		int resul = 0;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "insert into respuesta (Es_Correcta,Enunciado,Id_Pregunta) values (?,?,?)";
+			pst = this.connection.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);
+			pst.setInt(1, correcta);
+			pst.setString(2, resp);
+			pst.setInt(3, idPregunta);
+			resul = pst.executeUpdate();
+			rs = pst.getGeneratedKeys();
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();				
+			} catch (Exception e) {}
+		}
+		return resul;
+	}
+	
+	/**
+	 * Devuelve el tipo de arma correspondiente al id pasado como parametro
+	 * @param idArma int
+	 * @return objeto TipoArma o null si no existe el objeto con esa id en la BBDD
+	 */
+	public TipoArma getTipoArma(int idArma){
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		TipoArma result	= null;
+		String query = null;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "select Id_Arma,Descripcion from tipo_arma where Id_Arma=?";
+			pst = this.connection.prepareStatement(query);
+			pst.setInt(1, idArma);
+			rs = pst.executeQuery();
+			if (rs.next()){
+				int id = rs.getInt("Id_Arma");
+				String desc = rs.getString("Descripcion");
+				result = new TipoArma(id,desc);
 			}			
 		}
 		catch (SQLException e) {

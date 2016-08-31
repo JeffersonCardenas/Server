@@ -3,11 +3,14 @@ package services;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import data.Respuesta;
@@ -65,6 +68,16 @@ public class RespuestaResource {
 			return resul;
 		}
 		else throw new WebApplicationException(Response.Status.NOT_FOUND);
+	}
+	
+	@POST
+	@Path("/insert")
+	@Produces(MediaType.TEXT_HTML)
+	public Response insertaRespuesta(@FormParam("id") int id,@FormParam("respuesta") String respuesta,
+			@FormParam("correcta") int correcta){
+		int resul = dao.insertaRespuesta(id, respuesta, correcta);
+		if (resul>0) return Response.status(Response.Status.CREATED).build();
+		else throw new WebApplicationException(Response.Status.NOT_MODIFIED);
 	}
 
 }

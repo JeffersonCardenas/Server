@@ -3,7 +3,9 @@ package services;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -34,6 +36,15 @@ public class PreguntaResource {
 			return output;
 		}
 		else throw new WebApplicationException(Response.Status.NOT_FOUND);
+	}
+	
+	@POST
+	@Path("/insert")
+	@Produces("application/xml")
+	public String insertaPregunta(@FormParam("enunciado") String enunciado, @FormParam("examen") int examen){
+		int idPregunta = dao.insertaPregunta(enunciado, examen);
+		if (idPregunta!=0) return "<pregunta><id_pregunta>"+idPregunta+"</id_pregunta></pregunta>";
+		else return "<pregunta><id_pregunta>0</id_pregunta></pregunta>";
 	}
 	
 	/**

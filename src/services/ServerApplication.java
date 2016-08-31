@@ -26,6 +26,7 @@ public class ServerApplication extends Application{
 		this.singletons.add(new RespuestaResource(dao));
 		this.singletons.add(new ImagenResource(dao));
 		this.singletons.add(new ObjetoProhibidoResource(dao));
+		this.singletons.add(new TipoArmaResource(dao));
 		logger.info("Entramos en ServerApplication");
 	}
 	
@@ -44,6 +45,7 @@ public class ServerApplication extends Application{
 		set.add(RespuestaResource.class);
 		set.add(ImagenResource.class);
 		set.add(ObjetoProhibidoResource.class);
+		set.add(TipoArmaResource.class);
 		return set;
 	}
 
