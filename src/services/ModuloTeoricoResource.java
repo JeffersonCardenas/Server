@@ -85,7 +85,6 @@ public class ModuloTeoricoResource {
 	        else return Response.status(Response.Status.NOT_FOUND).build();
 		}
 		else return Response.status(Response.Status.BAD_REQUEST).build();
-		
 	}
 	
 	@GET
@@ -93,12 +92,8 @@ public class ModuloTeoricoResource {
 	@Produces("application/xml")
 	public String getModuloTeorico(@PathParam("nivel") int nivel,@PathParam("modulo") int modulo){
 		ModuloTeorico mod = dao.getModuloTeorico(nivel, modulo);
-		if (mod==null){
-			throw new WebApplicationException(Response.Status.NOT_FOUND);
-		}
-		else {
-			return this.moduloToXml(mod);
-		}		
+		if (mod==null)	throw new WebApplicationException(Response.Status.NOT_FOUND);
+		else return this.moduloToXml(mod);	
 	}
 	
 	@GET

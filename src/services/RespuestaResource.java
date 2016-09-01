@@ -55,7 +55,6 @@ public class RespuestaResource {
 		}
 		result+="</respuestas>";
 		return result;
-		
 	}
 	
 	@GET

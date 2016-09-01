@@ -39,8 +39,7 @@ public class ExamenTeoricoResource {
 	@Produces(MediaType.TEXT_HTML)
 	public Response insertAprobadoTeorico(@FormParam("dni") String dni, @FormParam("id") int id){
 		if (dao.insertaAprobadoTeorico(dni, id, Tools.getDate())>0) return Response.status(Response.Status.OK).build();
-		else return Response.status(Response.Status.NOT_FOUND).build();
-		
+		else return Response.status(Response.Status.NOT_FOUND).build();	
 	}
 
 

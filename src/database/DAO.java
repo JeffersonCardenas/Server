@@ -94,6 +94,11 @@ public class DAO {
 		return resul;
 	}
 	
+	/**
+	 * Elimina un usuario de la BBDD
+	 * @param dni String del alumno
+	 * @return 1 si se ha borrado correctamente, 0 en otro caso
+	 */
 	public int deleteUsuario(String dni) {
 		PreparedStatement pst = null;
 		ResultSet rs          = null;

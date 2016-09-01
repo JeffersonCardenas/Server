@@ -4,9 +4,7 @@ public class Certificados {
 	
 	private int nivel;
 	
-	public Certificados(){
-		
-	}
+	public Certificados(){	}
 	
 	public Certificados(int n){
 		this.nivel=n;

@@ -31,8 +31,7 @@ public class ExamenPracticoResource {
 	public String getExamenPractico(@PathParam("nivel") int nivel){
 		final ExamenPractico practico = dao.getExamenPractico(nivel);
 		if (practico==null) throw new WebApplicationException(Response.Status.NOT_FOUND);
-		else return this.examenPracticoToXml(practico);
-		
+		else return this.examenPracticoToXml(practico);	
 	}
 	
 	@POST

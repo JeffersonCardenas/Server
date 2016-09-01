@@ -122,7 +122,6 @@ public class ImagenResource {
 		}
 		result+="</imagenes>";
 		return result;
-		
 	}
 
 }
