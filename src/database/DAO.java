@@ -6,6 +6,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -804,6 +805,76 @@ public class DAO {
 	}
 	
 	/**
+	 * Actualiza los datos de una imagen en la BBDD
+	 * @param image Imagen
+	 * @return int 1 si se ha actualizado correctamente la fila, 0 en caso contrario
+	 */
+	public int updateImagen(Imagen image){
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		int resul = 0;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "update imagen set normal=?,organico=?,inorganico=?,bn=?,Id_Objeto=? where Id_Imagen=?";
+			pst = this.connection.prepareStatement(query);
+			pst.setString(1, image.getNormal());
+			pst.setString(2, image.getOrganico());
+			pst.setString(3, image.getInorganico());
+			pst.setString(4, image.getBn());
+			if (image.getId_objeto()>0) pst.setInt(5, image.getId_objeto());
+			else	pst.setNull(5, Types.NULL);
+			pst.setInt(6, image.getId_imagen());
+			resul = pst.executeUpdate();			
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();				
+			} catch (Exception e) {}
+		}
+		return resul;
+	}
+	
+	/**
+	 * Inserta una nueva imagen sin objeto prohibido asociado
+	 * @param idExamen int Id del Examen Practico al que pertenece la imagen
+	 * @return int devuelve el id de la imagen insertada o 0 si no se ha podido insertar
+	 */
+	public int insertaImagen(int idExamen){
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		int resul = 0;
+		int lastid = 0;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "insert into imagen (normal, organico, inorganico, bn, Id_Objeto, Id_Examen)"
+					+ " values (NULL,NULL,NULL,NULL,NULL,?)";
+			pst = this.connection.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);
+			pst.setInt(1, idExamen);
+			resul = pst.executeUpdate();
+			rs = pst.getGeneratedKeys();
+			if (rs.next() && resul>0){
+				lastid = rs.getInt(1);
+			}
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();				
+			} catch (Exception e) {}
+		}
+		return lastid;
+	}
+	
+	/**
 	 * Inserta un aprobado practico
 	 * @param dni String del alumno que lo ha aprobado
 	 * @param idExamenPractico int
@@ -873,6 +944,45 @@ public class DAO {
 			} catch (Exception e) {}
 		}
 		return result;
+	}
+	
+	/**
+	 * Inserta un nuevo Objeto Prohibido en la BBDD
+	 * @param prohibido ObjetoProhibido
+	 * @return int devuelve el id auto generado al insertar el objeto prohibido, 0 en caso contrario
+	 */
+	public int insertObjetoProhibido(ObjetoProhibido prohibido){
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		String query = null;
+		int resul = 0;
+		int lastid=0;
+		try{
+			this.connection = DBConnection.getConnection();
+			query = "insert into objeto_prohibido (Nombre,posx,posy,alto,ancho,Id_Arma) values (?,?,?,?,?,?)";
+			pst = this.connection.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);
+			pst.setString(1, "ObjetoPeligroso");
+			pst.setInt(2, prohibido.getPosx());
+			pst.setInt(3, prohibido.getPosy());
+			pst.setInt(4, prohibido.getAlto());
+			pst.setInt(5, prohibido.getAncho());
+			pst.setInt(6, prohibido.getId_arma());
+			resul = pst.executeUpdate();
+			rs = pst.getGeneratedKeys();
+			if (rs.next() && resul>0){
+				lastid = rs.getInt(1);
+			}
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		} finally {
+			try{
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (this.connection != null) this.connection.close();				
+			} catch (Exception e) {}
+		}
+		return lastid;
 	}
 	
 	/**
@@ -977,6 +1087,40 @@ public class DAO {
 			} catch (Exception e) {}
 		}
 		return result;
+	}
+	
+	/**
+	 * Devuelve todos los tipos de arma del sistema
+	 * @return List<TipoArma>
+	 */
+	public List<TipoArma> getListTipoArma(){
+		Connection con        = null;
+		PreparedStatement pst = null;
+		ResultSet rs          = null;
+		List<TipoArma> resul = new LinkedList<TipoArma>();
+		try{
+			con = DBConnection.getConnection();
+			String sql = "select Id_Arma,Descripcion from tipo_arma";
+			pst = con.prepareStatement(sql);
+			rs = pst.executeQuery();
+			while (rs.next()) {
+				int t = rs.getInt("Id_Arma");
+				String desc = rs.getString("Descripcion");
+				resul.add(new TipoArma(t,desc));
+			}
+			return resul;
+		}
+		catch (SQLException e){
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (rs != null) rs.close();
+				if (pst != null) pst.close();
+				if (con != null) con.close();
+			} catch (Exception e) {}
+		}
+		return null;
 	}
 
 
